@@ -1,0 +1,10 @@
+   13  grep -h
+   14  grep --help
+   15  find --name "*gcc*" /usr/bin
+   16  find -name "*gcc*" /usr/bin
+   17  find --help
+   18  clear
+   19  ls -1 /usr/bin/*gcc* | sort -r | head -n 5 > ~/week01/ex1.txt
+   20  ls -1 /usr/bin/*gcc* | sort -r | head -n 5 > ex1.txt
+   21  vim ex1.sh
+   22  history | tail -n 10 > ex2.txt

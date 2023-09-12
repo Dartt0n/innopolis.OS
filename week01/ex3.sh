@@ -1,13 +1,22 @@
-mkdir {ex31,ex32}
+delay()
+{
+  date
+  sleep 3
+}
+
+mkdir ex31
+
+delay
 ls -ltr / > ex31/root.txt
 
-date
+delay
+mkdir ex32
 
-sleep 3
-
+delay
 ls -ltr ~ > ex32/home.txt
-
-ls
 
 cat ex31/root.txt
 cat ex32/home.txt
+
+ls ex32
+ls ex31

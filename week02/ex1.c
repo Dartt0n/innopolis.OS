@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   double          f32var;
 
   i16var = INT_MAX;
-  u8var  = 2*SHRT_MAX;
+  u8var  = 2*SHRT_MAX+1;
   i32var = LONG_MAX;
   f16var = FLT_MAX;
   f32var = DBL_MAX;

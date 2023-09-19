@@ -4,7 +4,8 @@
 
 long int convert(long long int number, int s, int t)
 {
-    if (s < 2 || s > 10 || t < 2 || t > 10 || number < 0) {
+    if (s < 2 || s > 10 || t < 2 || t > 10 || number < 0)
+    {
         return -1;
     }
 
@@ -12,7 +13,8 @@ long int convert(long long int number, int s, int t)
     for (int mult = 1; number > 0; mult *= s, number /= 10)
     {
         int digit = number % 10;
-        if (digit >= s) {
+        if (digit >= s)
+	{
             return -1;
         }
 
@@ -28,7 +30,8 @@ long int convert(long long int number, int s, int t)
     return result;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     long long int number;
     int s, t;
 
@@ -38,9 +41,11 @@ int main(int argc, char *argv[]) {
     
 
     long long int res;
-    if ((res = convert(number, s, t)) == -1) {
+    if ((res = convert(number, s, t)) == -1)
+    {
         printf("cannot convert!");
-    } else {
+    } else
+    {
         printf("%d\n", res);
     }
 

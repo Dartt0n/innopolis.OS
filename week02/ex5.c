@@ -12,10 +12,14 @@ long long int tribonacci(int n)
 	// 0 1 1 2 4 7 13
 
 	if (n == 0)
+	{
 		return a;
-	else if (n <= 2)
+	} else if (n <= 2)
+	{
 		return b;
-	else for (int i = 0; i < n - 2; i++) {
+	}
+	else for (int i = 0; i < n - 2; i++)
+	{
 		c = a + b + c;
 		b = c - a - b;
 		a = c - a - b;

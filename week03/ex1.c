@@ -24,13 +24,13 @@ int const_tri(int *p, int n)
 
 int main()
 {
-    int *q = &x;
+    const int *q = &x;
     int *p = malloc(sizeof(int) * 3);
     p[0] = x;
     p[1] = x;
     p[2] = 2 * x;
 
-    printf("q=%ld, p=%ld\n", q, p);
+    printf("q=%p, p=%p, (p+1)=%p, (p+2)=%p\n", q, p, p + 1, p + 2);
 
     if ((long long int)(p + 1) - (long long int)(p) == sizeof(int) &&
         (long long int)(p + 2) - (long long int)(p + 1) == sizeof(int))
@@ -43,7 +43,7 @@ int main()
     }
 
     int r = const_tri(p, 15);
-    printf("15th tribonacci is %d\n", const_tri(p, 15));
+    printf("15th tribonacci is %d\n", r);
 
     free(p);
     return EXIT_SUCCESS;

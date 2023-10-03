@@ -1,0 +1,33 @@
+We can obtain progressing process tree by calling `pstree` periodically.
+These trees for $n=3$ and $n=5$ can be found in `ex3-3.txt` and `ex3-5.txt`
+correspondingly. For example, last tree for $n=3$:
+
+main-+-main-+-main---main
+     |      `-main
+     |-main---main
+     `-main
+
+So, what is happenning here. Original process (futher `main`) start its executions.
+It enters the for-loop and calls `fork`.
+After that, 2 processes - `main` and `child1-gen1` - sleep for 5 seconds.
+Then, they continue executing and call `fork` again.
+Processes `child2-gen1` and `child1-gen2` are spawned due to this.
+After that, all 4 processes sleep for 5 seconds.
+Then, they call `fork` and spawn processes
+`child3-gen1`, `child2-gen2`, `child1-gen3-1` and `child1-gen3-2`.
+After thet, all 8 processes sleep for 5 seconds, and exit with EXIS_SUCCESS code.
+
+
+  t=5      t=10        t=15
+- main --- main ------ main
+  `- c1g1  |- c1g1     |- c1g1
+           |  `- c1g2  |  |- c1g2
+           `- c2g1     |  |  `- c1g3-1
+                       |  `- c2g2
+                       |- c2g1
+                       |  `- c1g3-2
+                       `- c3g1
+
+
+For $n=5$ results would be the same, except the height of the tree would be 5,
+and, therefore, maximum processes running at the same time $2^5=32$.

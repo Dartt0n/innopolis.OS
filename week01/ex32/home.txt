@@ -1,0 +1,5 @@
+total 16
+drwxr-xr-x 3 dartt0n dartt0n 4096 Sep 10 22:27 build
+drwxr-xr-x 4 dartt0n dartt0n 4096 Sep 11 07:10 opsys
+-rw-r--r-- 1 dartt0n dartt0n   20 Sep 11 18:34 wait.this.is.illegal.txt
+drwxr-xr-x 2 dartt0n dartt0n 4096 Sep 11 18:38 week01

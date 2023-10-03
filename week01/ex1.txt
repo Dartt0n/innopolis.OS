@@ -1,0 +1,5 @@
+/usr/bin/gcc-ranlib
+/usr/bin/gcc-nm
+/usr/bin/gcc-ar
+/usr/bin/gcc
+/usr/bin/aarch64-unknown-linux-gnu-gcc-ranlib

@@ -1,0 +1,19 @@
+The first row shows the real time (in seconds) taken by each thread,
+which includes the user and system times.
+The second row shows the user time (in seconds) taken by each thread,
+which excludes the system time.
+The third row shows the system time (in seconds) taken by each thread,
+which is the time spent in the kernel managing the thread.
+
+As we can see from the results,
+the real time taken by each thread decreases as the number of threads increases.
+This is because the overhead of creating a new thread becomes amortized over more threads,
+resulting in faster execution times.
+
+However, the user time taken by each thread does not change much as the number of threads increases.
+This suggests that the majority of the time is spent in user space, performing useful work,
+rather than in system space, where the kernel is managing the thread.
+
+The system time taken by each thread is relatively small compared to the real time,
+indicating that the kernel managing threads efficiently and switching between them fast,
+and threads do not sleep, but do useful work.

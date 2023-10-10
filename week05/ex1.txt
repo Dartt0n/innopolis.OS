@@ -1,0 +1,13 @@
+Publisher works like this: main process reads the stdin for messages, then send the data to the unnamed pipes.
+Subprocesses read from unnamed pipe and write to the corresponding named pipe.
+Each subscriber reads its named pipe and prints message to the stdout.
+This way, message, typed in stdin for publisher, appears at the same time to all subscribers.
+Moreover, all the subscribers receive the message.
+
+   ,_ unnamed pipe -> process 0 -> named pipe /tmp/ex1/s1 -> subscriber 1
+   |
+   |- unnamed pipe -> process 1 -> named pipe /tmp/ex1/s2 -> subscriber 2
+main
+   |- unnamed pipe -> process 2 -> named pipe /tmp/ex1/s3 -> subscriber 3
+   |
+   `- unnamed pipe -> process 3 -> named pipe /tmp/ex1/s4 -> subscriber 4

@@ -49,6 +49,18 @@ void read_file(FILE *file)
     }
 }
 
+int index_by_ID(int ID)
+{
+    for (int i = 0; i < procs_len; i++)
+    {
+        if (procs[i].ID == ID)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 // send signal SIGCONT to the worker process
 void resume(pid_t process)
 {
@@ -107,18 +119,28 @@ void create_process(int new_process_ID)
 ProcessData find_next_process()
 {
 
+    if (current_process_ID != -1)
+    {
+        int current_index = index_by_ID(current_process_ID);
+        if (procs[current_index].rem_burst != 0)
+        {
+            return procs[current_index];
+        }
+    }
+
     // ID of next process in {processes} array
     int next_process_index = 0;
-    int min_arr_time = __INT_MAX__;
+    int min_burst_time = __INT_MAX__;
 
     for (int i = 0; i < procs_len; i++)
     {
         if (
-            procs[i].arr_time < min_arr_time &&
-            procs[i].rem_burst > 0)
+            procs[i].burst_time < min_burst_time &&
+            procs[i].rem_burst > 0 &&
+            procs[i].arr_time <= total_time)
         {
             next_process_index = i;
-            min_arr_time = procs[i].arr_time;
+            min_burst_time = procs[i].burst_time;
         }
     }
 
@@ -180,18 +202,6 @@ void check_burst()
 
     // terminate the scheduler :)
     exit(EXIT_SUCCESS);
-}
-
-int index_by_ID(int ID)
-{
-    for (int i = 0; i < procs_len; i++)
-    {
-        if (procs[i].ID == ID)
-        {
-            return i;
-        }
-    }
-    return -1;
 }
 
 // This function is called every one second as handler for SIGALRM signal

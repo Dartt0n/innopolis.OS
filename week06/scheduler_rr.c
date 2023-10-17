@@ -19,11 +19,15 @@ typedef struct
     int end_time;   // completion time
     int turn_time;  // turnaround time
     int rem_burst;  // remaining burst (this should decrement when the process is being executed)
+    int rem_quantum;
 } ProcessData;
 
 int current_process_ID = -1; // the ID of the running process, -1 means no running processes
 
 unsigned total_time; // the total time of the timer
+
+int quantum;
+int quantum_candidate = -1;
 
 ProcessData procs[PS_MAX]; // array of process data. maps index to process
 unsigned procs_len;        // size of procs array
@@ -41,12 +45,44 @@ void read_file(FILE *file)
         procs[procs_len].end_time = 0;
         procs[procs_len].wait_time = 0;
         procs[procs_len].rem_burst = procs[procs_len].burst_time;
+        procs[procs_len].rem_quantum = 0;
     }
 
     for (int i = 0; i < PS_MAX; i++)
     {
         pids[i] = 0;
     }
+
+    // Sort by arr_time
+    for (int step = 0; step < procs_len - 1; ++step)
+    {
+        for (int i = 0; i < procs_len - step - 1; ++i)
+        {
+            if (procs[i].arr_time > procs[i + 1].arr_time)
+            {
+                ProcessData temp = procs[i];
+                procs[i] = procs[i + 1];
+                procs[i + 1] = temp;
+            }
+        }
+    }
+
+    // for (int i = 0; i < procs_len; i++)
+    // {
+    //     printf("#### DEBUG : %2d %2d %2d\n", procs[i].ID, procs[i].arr_time, procs[i].burst_time);
+    // }
+}
+
+int index_by_ID(int ID)
+{
+    for (int i = 0; i < procs_len; i++)
+    {
+        if (procs[i].ID == ID)
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 // send signal SIGCONT to the worker process
@@ -106,20 +142,35 @@ void create_process(int new_process_ID)
 // find next process for running
 ProcessData find_next_process()
 {
+    // printf("#### DEBUG {find_next_process} current_process_ID=%d\n", current_process_ID);
+    if (current_process_ID != -1)
+    {
+        int current_index = index_by_ID(current_process_ID);
+        // printf("#### DEBUG {find_next_process} current [ID %d] burst=%d quantum=%d\n", procs[current_index].ID, procs[current_index].rem_burst, procs[current_index].rem_quantum);
+        if (procs[current_index].rem_burst > 0 && procs[current_index].rem_quantum > 0)
+        {
+            return procs[current_index];
+        }
+    }
 
     // ID of next process in {processes} array
-    int next_process_index = 0;
+    int next_process_index = (quantum_candidate + 1) % procs_len;
     int min_arr_time = __INT_MAX__;
 
+    int next_index = next_process_index;
     for (int i = 0; i < procs_len; i++)
     {
-        if (
-            procs[i].arr_time < min_arr_time &&
-            procs[i].rem_burst > 0)
+        // printf("#### DEBUG {find_next_process} next_process_index %d\n", next_index);
+
+        // printf("#### DEBUG {find_next_process} next ID=%d, burst=%d\n", procs[next_index].ID, procs[next_index].rem_burst);
+        if (procs[next_index].rem_burst > 0 && procs[next_index].arr_time <= total_time)
         {
-            next_process_index = i;
-            min_arr_time = procs[i].arr_time;
+            next_process_index = next_index;
+            quantum_candidate = next_process_index;
+            break;
         }
+
+        next_index++;
     }
 
     // if next_process did not arrive so far,
@@ -182,18 +233,6 @@ void check_burst()
     exit(EXIT_SUCCESS);
 }
 
-int index_by_ID(int ID)
-{
-    for (int i = 0; i < procs_len; i++)
-    {
-        if (procs[i].ID == ID)
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
 // This function is called every one second as handler for SIGALRM signal
 void schedule_handler(int signum)
 {
@@ -207,6 +246,7 @@ void schedule_handler(int signum)
         printf("Scheduler: Runtime: %d seconds\n", total_time);
 
         procs[current_index].rem_burst--;
+        procs[current_index].rem_quantum--;
         printf("Process %d is running with %d seconds left\n", procs[current_index].ID, procs[current_index].rem_burst);
 
         if (procs[current_index].rem_burst == 0)
@@ -219,6 +259,15 @@ void schedule_handler(int signum)
             procs[current_index].end_time = total_time;
             procs[current_index].turn_time = procs[current_index].end_time - procs[current_index].arr_time;
             procs[current_index].wait_time = procs[current_index].turn_time - procs[current_index].burst_time;
+            current_index = -1;
+            current_process_ID = -1;
+        }
+
+        if (procs[current_index].rem_quantum == 0)
+        {
+            suspend(pids[current_process_ID]);
+            printf("Scheduler: Stopping Process %d (Remaining Time: %d)\n", procs[current_index].ID, procs[current_index].rem_burst);
+            current_index = -1;
             current_process_ID = -1;
         }
     }
@@ -243,6 +292,7 @@ void schedule_handler(int signum)
         create_process(current_process_ID);
         printf("Scheduler: Starting Process %d (Remaining Time: %d)\n", procs[current_index].ID, procs[current_index].rem_burst);
         procs[current_index].resp_time = total_time;
+        procs[current_index].rem_quantum = quantum;
     }
 
     int status;
@@ -250,6 +300,7 @@ void schedule_handler(int signum)
     {
         resume(pids[current_process_ID]);
         printf("Scheduler: Resuming Process %d (Remaining Time: %d)", procs[current_index].ID, procs[current_index].rem_burst);
+        procs[current_index].rem_quantum = quantum;
     }
 }
 
@@ -271,6 +322,9 @@ int main(int argc, char *argv[])
     {
         read_file(in_file);
     }
+
+    printf("Enter quantum: ");
+    scanf("%d", &quantum);
 
     // set a timer
     struct itimerval timer;

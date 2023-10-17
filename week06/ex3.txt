@@ -1,0 +1,7 @@
+The SJF algorithm for this particalur set of the tasks works faster, than FCFS.
+However, if in the FCFS algorithm every task would be performed, SJF could ignore for a while
+a long task while there a ton of smaller ones
+(this is happening in this data set with process id 3, it's wait time is 21s)
+
+If all the processes appear at the same time, they will be processed one by one.
+This is the worst case for the SJF.

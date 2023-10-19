@@ -1,0 +1,16 @@
+First fit :   716.91 ms
+Best  fit :  1981.86 ms
+Worst fit :  1942.12 ms
+
+From the results, it seems that the First Fit algorithm performed the best in terms of execution time,
+followed by the Worst Fit algorithm, and then the Best Fit algorithm.
+This indicates that the First Fit algorithm was able to find a suitable memory block
+for the data more quickly compared to the other two algorithms.
+However, it's important to note that the execution time of memory allocation
+algorithms can vary depending on various factors, such as the size of the memory space, 
+the number of available memory blocks, and the fragmentation level. 
+Therefore, it's possible for the performance of these techniques 
+to differ in different scenarios. It's also worth mentioning that the execution 
+time alone may not be the only factor to consider when evaluating the performance 
+of memory allocation techniques. Other factors such as memory utilization, fragmentation levels, 
+and fairness in resource allocation should also be taken into account for a comprehensive analysis.

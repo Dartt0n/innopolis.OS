@@ -130,6 +130,8 @@ void clear(uint adrs)
 
 double run(void func(uint, size_t))
 {
+    memory = (uint *)calloc(SIZE, sizeof(uint));
+
     FILE *f = fopen("./queries.txt", "r");
     char *line = NULL;
 
@@ -155,21 +157,14 @@ double run(void func(uint, size_t))
     free(line);
 
     fclose(f);
+    free(memory);
     return difftime(end, start) / 1000.0;
 }
 
 int main(int argc, char const *argv[])
 {
-    memory = (uint *)calloc(SIZE, sizeof(uint));
-    for (int x = 0; x < SIZE; x++)
-    {
-        memory[x] = 0;
-    }
-
     printf("First fit : %8.2f ms\n", run(allocate_first_fit));
     printf("Best  fit : %8.2f ms\n", run(allocate_best_fit));
     printf("Worst fit : %8.2f ms\n", run(allocate_worst_fit));
-
-    free(memory);
     return 0;
 }

@@ -15,24 +15,17 @@ void allocate_first_fit(uint adrs, size_t size)
 
     for (int i = 0; i < SIZE - size; i++)
     {
-        char score = 1;
         for (int j = i; j < i + size; j++)
         {
-            if (memory[j] == 0)
+            if (memory[j] != 0)
             {
-                score++;
-            }
-            else
-            {
+                i = j;
                 continue;
             }
         }
 
-        if (score)
-        {
-            best_candidate = i;
-            break;
-        }
+        best_candidate = i;
+        break;
     }
 
     for (int x = best_candidate; x < best_candidate + size; x++)
@@ -48,7 +41,6 @@ void allocate_worst_fit(uint adrs, size_t size)
 
     for (int i = 0; i < SIZE; i++)
     {
-
         int score = 0;
         int current = i;
         for (; i < SIZE && memory[i] == (uint)0; i++)
@@ -56,7 +48,7 @@ void allocate_worst_fit(uint adrs, size_t size)
             score++;
         }
 
-        if (score > best_score)
+        if (score > size && score > best_score)
         {
             best_candidate = current;
             best_score = score;
@@ -138,33 +130,42 @@ double run(void func(uint, size_t))
     size_t size;
     uint adrs;
 
-    clock_t start = clock();
-    for (; !feof(f) && getline(&line, &size, f) != -1 && strcmp(line, "end"); free(line), line = NULL)
+    size_t ops = 0;
+
+    double runtime = 0;
+
+    for (; !feof(f) && getline(&line, &size, f) != -1 && strcmp(line, "end"); free(line), line = NULL, ops++)
     {
         char command[8];
         sscanf(line, "%s %d %d", command, &adrs, &size);
 
         if (!strcmp(command, "allocate"))
         {
+            clock_t start = clock();
             func(adrs, size);
+            runtime += difftime(clock(), start);
         }
         else if (!strcmp(command, "clear"))
         {
             clear(adrs);
         }
     }
-    clock_t end = clock();
+
     free(line);
 
     fclose(f);
     free(memory);
-    return difftime(end, start) / 1000.0;
+
+    runtime = runtime / CLOCKS_PER_SEC * 1000.0;
+
+    printf("runtime: %10.2f ms\n", runtime);
+    printf("op/ms  : %10.2f op/ms\n", ops / runtime);
 }
 
 int main(int argc, char const *argv[])
 {
-    printf("First fit : %8.2f ms\n", run(allocate_first_fit));
-    printf("Best  fit : %8.2f ms\n", run(allocate_best_fit));
-    printf("Worst fit : %8.2f ms\n", run(allocate_worst_fit));
+    printf("# First fit\n"), run(allocate_first_fit);
+    printf("# Best  fit\n"), run(allocate_best_fit);
+    printf("# Worst fit\n"), run(allocate_worst_fit);
     return 0;
 }

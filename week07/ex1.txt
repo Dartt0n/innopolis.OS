@@ -1,6 +1,12 @@
-First fit :   716.91 ms
-Best  fit :  1981.86 ms
-Worst fit :  1942.12 ms
+# First fit
+runtime:      14.27 ms
+op/ms  :       3.78 op/ms
+# Best  fit
+runtime:    1279.51 ms
+op/ms  :       0.04 op/ms
+# Worst fit
+runtime:    1227.28 ms
+op/ms  :       0.04 op/ms
 
 From the results, it seems that the First Fit algorithm performed the best in terms of execution time,
 followed by the Worst Fit algorithm, and then the Best Fit algorithm.

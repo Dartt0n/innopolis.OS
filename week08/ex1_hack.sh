@@ -2,6 +2,7 @@
 
 gcc ex1.c -o ex1
 ./ex1 &
+sleep 0.5
 PID=$(cat /tmp/ex1.pid)
 
 # `cat /proc/pid/maps` outputs the mapping info
@@ -21,6 +22,8 @@ ADDRESSRANGE=$(cat /proc/$PID/maps | grep /dev/zero | awk "{print \$1}")
 START=0x$(expr $ADDRESSRANGE : "\\(.*\\)-.*")
 MEMORY=$(sudo xxd -s $START -l 13 /proc/$PID/mem)
 PASSWORD=$(expr "$MEMORY" : ".*pass:\\(.*\\)")
+echo ">> password is $PASSWORD"
+echo ">> address in memory is $START"
 
 # or using malloc:
 # ADDRESSRANGE=$(cat /proc/$PID/maps | grep heap | awk "{print \$1}")
@@ -28,8 +31,7 @@ PASSWORD=$(expr "$MEMORY" : ".*pass:\\(.*\\)")
 # END=0x$(expr $ADDRESSRANGE : ".*-\\(.*\\)")
 # MEMORY=$(sudo xxd -s $START -l $(($END - $START)) /proc/$PID/mem | cut -d' ' -f11- | tr -d '\n' | grep -oP "pass:.{8}")
 # PASSWORD=$(expr "$MEMORY" : ".*pass:\\(.*\\)")
-
-echo ">> password is $PASSWORD"
+# echo ">> password is $PASSWORD"
 
 kill -2 $PID # send sigint
 

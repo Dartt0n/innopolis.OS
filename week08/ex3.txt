@@ -1,0 +1,5 @@
+The `si` and `so` parameters show amount of bytes in swap operations.
+My machine has no swap space and therefore these parameters are always zero.
+However, if machine has swap space, it would be used to write pages on disk
+and load pages from disk in order to increase maximum possible amount
+of memory used by a program.

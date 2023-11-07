@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <time.h>
 
 #define PAGEFILEDIR "/tmp/ex1"
 #define PAGEFILE "/tmp/ex1/pagetable" // The page table is held in memory backed by a file /tmp/ex2/pagetable
@@ -27,7 +28,7 @@ typedef char String[STRSIZE];
 
 void __non__() {}
 
-#define DEBUG 1
+// #define DEBUG 1
 
 #ifdef DEBUG
 #define log printf

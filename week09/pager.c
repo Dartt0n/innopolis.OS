@@ -20,28 +20,28 @@ void init_PTE(PTE *memory)
 void print_disk()
 {
     log("│                         \n");
-    log("│  ╭───── disk dump ─────╮\n");
-    log("│  │                     │\n");
+    log("│  ╭────── disk dump ──────╮\n");
+    log("│  │                       │\n");
     for (size_t i = 0; i < P; i++)
     {
-        log("│  ├───(%02d) <%7s>    │\n", i, DISK[i]);
+        log("│  ├───(%04d) <%7s>    │\n", i, DISK[i]);
     }
-    log("│  │                     │\n");
-    log("│  ╰─────────────────────╯\n");
+    log("│  │                       │\n");
+    log("│  ╰───────────────────────╯\n");
     log("│                         \n");
 }
 
 void print_ram()
 {
     log("│                         \n");
-    log("│  ╭────── ram dump ─────╮\n");
-    log("│  │                     │\n");
+    log("│  ╭─────── ram dump ──────╮\n");
+    log("│  │                       │\n");
     for (size_t i = 0; i < F; i++)
     {
-        log("│  ├───(%02d) <%7s>    │\n", i, RAM[i]);
+        log("│  ├───(%04d) <%7s>    │\n", i, RAM[i]);
     }
-    log("│  │                     │\n");
-    log("│  ╰─────────────────────╯\n");
+    log("│  │                       │\n");
+    log("│  ╰───────────────────────╯\n");
     log("│                         \n");
 }
 
@@ -96,13 +96,13 @@ int random_range(int lower, int upper)
 
 void load_from_disk(int victim_frame, int wanted_page)
 {
-    log("┝╾─ loading disk page (%02d) to ram frame (%02d)\n", wanted_page, victim_frame);
+    log("┝╾─ loading disk page (%04d) to ram frame (%04d)\n", wanted_page, victim_frame);
     disk2ram(wanted_page, victim_frame);
     DISK_ACCESSES++;
     TABLE[wanted_page].valid = true;
     TABLE[wanted_page].dirty = false;
     TABLE[wanted_page].frame = victim_frame;
-    log("┝╾─ loaded disk page (%02d) to ram frame (%02d)\n", wanted_page, victim_frame);
+    log("┝╾─ loaded disk page (%04d) to ram frame (%04d)\n", wanted_page, victim_frame);
 }
 
 void prepare_ram(int page_index)
@@ -111,14 +111,14 @@ void prepare_ram(int page_index)
     print_ram();
     if (TABLE[page_index].dirty)
     {
-        log("┝╾─ page (%02d) is dirty, save to disk\n", page_index);
+        log("┝╾─ page (%04d) is dirty, save to disk\n", page_index);
         ram2disk(page_index, TABLE[page_index].frame);
         DISK_ACCESSES++;
     }
 
-    log("┝╾─ nullifing ram frame (%02d)\n", TABLE[page_index].frame);
+    log("┝╾─ nullifing ram frame (%04d)\n", TABLE[page_index].frame);
     memset(RAM[TABLE[page_index].frame], 0, STRSIZE);
-    log("┝╾─ nullifing page (%02d)\n", page_index);
+    log("┝╾─ nullifing page (%04d)\n", page_index);
     TABLE[page_index].dirty = false;
     TABLE[page_index].frame = -1;
     TABLE[page_index].valid = false;
@@ -138,7 +138,7 @@ int find_page(int frame)
             break;
         }
     }
-    log("┝╾─ found corresponding disk page: (%02d)\n", page_index);
+    log("┝╾─ found corresponding disk page: (%04d)\n", page_index);
     return page_index;
 }
 
@@ -146,7 +146,7 @@ int random_page()
 {
     log("┝╾─ selecting victim page randomly...\n");
     int victim = random_range(0, F - 1);
-    log("┝╾─ selected victim frame: (%02d)\n", victim);
+    log("┝╾─ selected victim frame: (%04d)\n", victim);
     return find_page(victim);
 }
 
@@ -164,7 +164,7 @@ int nfu()
             victim = i;
         }
     }
-    log("┝╾─ selected victim frame: (%02d)\n", TABLE[victim].frame);
+    log("┝╾─ selected victim frame: (%04d)\n", TABLE[victim].frame);
     return victim;
 }
 
@@ -183,7 +183,7 @@ int aging()
         }
     }
 
-    log("┝╾─ selected victim frame: (%02d)\n", TABLE[victim].frame);
+    log("┝╾─ selected victim frame: (%04d)\n", TABLE[victim].frame);
     return victim;
 }
 
@@ -275,9 +275,9 @@ int main(int argc, char const *argv[])
     for (;;)
     {
         log("┝╾─ pager waits for SIGUSR1 signal...\n");
-        SIGUSR1_paused = true;
         for (; SIGUSR1_paused;)
             ;
+        SIGUSR1_paused = true;
         log("┝╾─ received SIGUSR1 signal\n");
 
         int wanted_page_index = -1;
@@ -289,17 +289,16 @@ int main(int argc, char const *argv[])
         {
             if (TABLE[i].referenced != 0 && !TABLE[i].valid && wanted_page_index == -1)
             {
-                log("┝╾─ page (%02d) is wanted page\n");
+                log("┝╾─ page (%04d) is wanted page\n");
                 wanted_page_index = i;
                 mmu_pid = TABLE[i].referenced;
             }
 
-            log("┝╾─ page (%02d) shift age\n");
             TABLE[i].age >>= 1; // age the page - time spares no one
 
             if (TABLE[i].referenced != 0)
             {
-                log("┝╾─ page (%02d) is referenced, increment counter, age & clear ref bit\n");
+                log("┝╾─ page (%04d) is referenced, increment counter, age & clear ref bit\n");
                 TABLE[i].counter++;
                 TABLE[i].referenced = 0;
                 TABLE[i].age += 0b10000000; // set the first bit
@@ -308,7 +307,7 @@ int main(int argc, char const *argv[])
 
         if (wanted_page_index != -1)
         {
-            log("┝╾─ wanted page found: index (%02d)\n", wanted_page_index);
+            log("┝╾─ wanted page found: index (%04d)\n", wanted_page_index);
 
             log("┝╾─ looking for free frame...\n");
             int frame = find_free_frame();
@@ -320,11 +319,11 @@ int main(int argc, char const *argv[])
 
                 prepare_ram(page);
                 frame = find_free_frame();
-                log("┝╾─ free frame is created: (%02d)\n", frame);
+                log("┝╾─ free frame is created: (%04d)\n", frame);
             }
             else
             {
-                log("┝╾─ free frame is found: (%02d)\n", frame);
+                log("┝╾─ free frame is found: (%04d)\n", frame);
             }
 
             load_from_disk(frame, wanted_page_index);
@@ -351,7 +350,6 @@ int main(int argc, char const *argv[])
         }
     }
 
-    printf("\n");
-    printf("TOTAL NUMBER OF DISK OPS: %d\n", DISK_ACCESSES);
+    // printf("TOTAL NUMBER OF DISK OPS: %d\n", DISK_ACCESSES);
     return EXIT_SUCCESS;
 }

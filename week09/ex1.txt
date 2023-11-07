@@ -1,0 +1,82 @@
+On the random generated tests there is no significant difference between algorithms, however they may benefit on more close to the reality scenarios.
+In performace meaning, random is obviosly the fastest one mean while aging and hfu takes almost the same amount of time to perform.
+
+Random
+Hit ratio 105/1000 (0.105000)
+Miss ratio 895/1000 (0.895000)
+
+real    0m0.275s
+user    0m0.291s
+sys     0m0.019s
+
+
+Aging
+Hit ratio 103/1000 (0.103000)
+Miss ratio 897/1000 (0.897000)
+
+real    0m0.160s
+user    0m0.200s
+sys     0m0.014s
+
+
+NFU
+Hit ratio 89/1000 (0.089000)
+Miss ratio 911/1000 (0.911000)
+
+real    0m0.254s
+user    0m0.288s
+sys     0m0.012s
+
+
+Random (Gauss Distributed Ops)
+Hit ratio 83/1000 (0.083000)
+Miss ratio 917/1000 (0.917000)
+
+real    0m0.278s
+user    0m0.302s
+sys     0m0.017s
+
+
+NFU (Gauss Distributed Ops)
+Hit ratio 85/1000 (0.085000)
+Miss ratio 915/1000 (0.915000)
+
+real    0m0.412s
+user    0m0.233s
+sys     0m0.010s
+
+
+Aging (Gauss Distributed Ops)
+Hit ratio 66/1000 (0.066000)
+Miss ratio 934/1000 (0.934000)
+
+real    0m0.355s
+user    0m0.386s
+sys     0m0.021s
+
+
+Random (Sequential 0-1000)
+Hit ratio 0/1000 (0.000000)
+Miss ratio 1000/1000 (1.000000)
+
+real    0m0.147s
+user    0m0.058s
+sys     0m0.008s
+
+
+NFU (Sequential 0-1000)
+Hit ratio 0/1000 (0.000000)
+Miss ratio 1000/1000 (1.000000)
+
+real    0m0.176s
+user    0m0.215s
+sys     0m0.015s
+
+
+Aging (Sequential 0-1000)
+Hit ratio 0/1000 (0.000000)
+Miss ratio 1000/1000 (1.000000)
+
+real    0m0.249s
+user    0m0.292s
+sys     0m0.015s

@@ -1,0 +1,51 @@
+
+=== ORIGINAL ROOT  ===
+root dir ("/") content:
+sys
+usr
+home
+proc
+opt
+..
+dev
+srv
+.
+root
+lost+found
+run
+sbin
+bin
+etc
+boot
+lib
+var
+mnt
+tmp
+=== CHANGED ROOT ===
+root dir ("/") content:
+file1
+..
+usr
+bin
+file2
+ex1
+.
+lost+found
+lib
+
+=== EXPLANATIONS ===
+When we run the code normally (without chroot) it will list the
+content of the root directory of out actual filesystem. This 
+includes basic directories and files like /bin, /home, /usr etc.
+However, when we run the code using "chroot" utility, it
+changes root directory to the ./lofsdisk and therefore a new
+root directory for the code is ./lofsdisk. Thus, when the code
+reads "/" directory, it actually read lofsdisk. And since we
+have created files "file1" and "file2" in this category, they
+are listed when we iterate over / directory.
+
+So, the difference in output between the two cases is due to the
+difference in what is treated  as the root directory (/): in the
+first case, it's the actual root directory of your system, and
+in the second case, it's the root directory of the chroot
+environment.

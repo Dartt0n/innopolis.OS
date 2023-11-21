@@ -14,15 +14,16 @@ gcc ex1.c -o ex1
 # generate a file of size 100MiB using 100 iterations by 1M
 dd if=/dev/zero of=./lofs.img bs=1M count=100
 
-# setup loop devices over created image
-sudo losetup /dev/loop0 ./lofs.img
+
+DEVICE=$(losetup -f) # find first free device
+sudo losetup "$DEVICE" ./lofs.img
 
 # create file system of type ext4 in the created loop device
-sudo mkfs -t ext4 /dev/loop0 
+sudo mkfs -t ext4 "$DEVICE" 
 
 # create directory and mount loop device in this directory
 mkdir lofsdisk
-sudo mount -o rw -t ext4 /dev/loop0 lofsdisk
+sudo mount -o rw -t ext4 "$DEVICE" lofsdisk
 
 
 
@@ -71,7 +72,7 @@ sudo chroot lofsdisk /ex1 >> ex1.txt
 
 # cleanup
 rm ex1 # remove file
-sudo losetup -d /dev/loop0 # remove device
+sudo losetup -d "$DEVICE" # remove device
 sudo umount ./lofsdisk # unmount dir
 sudo rm -rf lofsdisk # remove dir
 rm -rf lofs.img # remove img

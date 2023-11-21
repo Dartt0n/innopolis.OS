@@ -33,8 +33,8 @@ echo "Kudryavtsev" | sudo tee lofsdisk/file2
 
 get_libs() {
   if [ -f "$1" ]; then # if file exist
-    # take 3rd word from each row from lld output and select that which contains '/' (path)
-    ldd $1 | awk '{print $3}' | grep '/'
+    # return every found path in command output
+    ldd $1 | tr ' ' '\n' | grep "/" | awk '{ print $1 }'
   else
     echo "File not found"
   fi
@@ -58,11 +58,6 @@ sudo cp -v --parents /bin/{bash,echo,cat,ls} lofsdisk
 } | while read lib;
 do
     sudo cp --parents -v "$lib" lofsdisk # copy all libs
-
-    if [[ $lib = *"ld-linux"* ]];
-    then
-      sudo cp -v "$lib" lofsdisk/lib # copy linker to lib
-    fi
 done
 
 
